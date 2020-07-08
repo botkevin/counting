@@ -75,6 +75,6 @@ def detect(img1, img2, method):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-detect(cv2.imread('screen.jpg',0),
-       cv2.imread('find_the_screen.jpg',0),
+detect(cv2.imread('./images/screen.jpg',0),
+       cv2.imread('./images/find_the_screen.jpg',0),
        'surf')

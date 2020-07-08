@@ -12,6 +12,9 @@ def s_search(image):
     boxes = selective_search(image, mode='single')
     return boxes
 
+"""
+
+"""
 def check_imgs(img1, img2):
     
 
