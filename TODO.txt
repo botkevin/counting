@@ -1,2 +1,7 @@
 1. Get selective search working with feature detection
     - first should get main program working without selective search, but i think we should do this anyways
+    - selective search feed into program
+    - selective search display
+    - implement basic scoring method
+    - Non Maximum Suppression (NMS)
+    - fancy scoring method
