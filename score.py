@@ -1,10 +1,9 @@
-
 # TODO: do I do cutoff here or elsewhere?
 
-"""
-determines score based on number of good points
-"""
 def basic(kp1, kp2, good):
+    """
+    determines score based on number of good points
+    """
     return good
 
 # we can build fancy clustering scoring methods here

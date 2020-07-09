@@ -1,13 +1,18 @@
-import numpy as np
 import cv2
-import matplotlib.pyplot as plt
-import imutils
 
-"""
-Takes in a method("orb","surf","sift")
-returns a detector
-"""
 def detector(method):
+    """Sets up a detector based on a method
+
+    Parameters
+    ----------
+    method : string
+        "orb","surf","sift"
+
+    Returns
+    -------
+    dec
+        feture detector using [method]
+    """    
     dec = None
     if method == "orb":
         dec = cv2.ORB_create()
@@ -19,20 +24,45 @@ def detector(method):
         raise Exception("use surf, sift, or orb")
     return dec
 
-"""
-Takes in a detector and image
-returns keypoints and descriptors
-"""
 def detect(dec, img):
+    """Takes in a detector and image
+        returns keypoints and descriptors
+
+    Parameters
+    ----------
+    dec : cv::Feature2D class
+    img : image matrix
+
+    Returns
+    -------
+    kp : cv2 keypoints
+    des : cv2 descriptors
+    """    
     # find the keypoints and descriptors
     kp, des = dec.detectAndCompute(img,None)
     return kp, des
    
-"""
-Takes in descriptors
-returns 2 best matches using FLANN or brute force NN
-"""
 def match(des1, des2, modus, method):
+    """Takes in descriptors
+        returns 2 best matches using FLANN
+        or brute force NN
+
+    Parameters
+    ----------
+    des1 : descriptor
+        descriptor of image 1
+    des2 : 
+        see above
+    modus : string
+        method to find NN ("bf", "FLANN")
+    method : string
+        "orb","surf","sift"
+
+    Returns
+    -------
+    array
+        list of matches
+    """
     matches = None
     if modus == "bf":
         # NORM_HAMMING for ORB, NORM_L2(default) for SURF/else
@@ -47,7 +77,7 @@ def match(des1, des2, modus, method):
         index_params, search_params = None, None
         if method == "orb":
             FLANN_INDEX_LSH = 6
-            index_params= dict (algorithm = FLANN_INDEX_LSH,
+            index_params = dict (algorithm = FLANN_INDEX_LSH,
                                 table_number = 6, # 12
                                 key_size = 12,     # 20
                                 multi_probe_level = 1) #2
@@ -63,13 +93,13 @@ def match(des1, des2, modus, method):
         matches = flann.knnMatch(des1,des2,k=2)
     return matches
 
-"""
-Takes in matches and applies ratio test
-David Lowe's Ratio test 
-http://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf#page=20
-returns good points
-"""
 def ratio(matches):
+    """
+    Takes in matches and applies ratio test
+    David Lowe's Ratio test 
+    http://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf#page=20
+    returns good matches
+    """
     good = []
     for m,n in matches:
         if m.distance < .75 * n.distance: #.8 for orb mebe?

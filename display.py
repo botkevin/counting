@@ -10,6 +10,27 @@ flags:
  - 2: homography only
 """
 def show(kp1, kp2, img1, img2, good, flag=0):
+    """displays feature matches in various ways thru pyplot
+
+    Parameters
+    ----------
+    kp1 : keypoints 
+        keypoints of img1
+    kp2 : 
+        see above
+    img1 : image matrix
+        first image
+    img2 : 
+        see above
+    good : [[m], ...]
+        good matches -> m
+    flag : int, optional
+        display flag
+         - 0: matches only
+         - 1: matches w/ homography
+         - 2: homography only, 
+        by default 0
+    """
     # params = dict(kp1=kp1, kp2=kp2, img1=img1, img2=img2, good=good)
     flag_functions={
         0 : matches_d,
@@ -18,18 +39,20 @@ def show(kp1, kp2, img1, img2, good, flag=0):
     }
     flag_functions.get(flag)(kp1, kp2, img1, img2, good)
 
-"""
-shows matches only
-"""
+
 def matches_d(kp1, kp2, img1, img2, good):
+    """
+    shows matches only
+    """
     # cv2.drawMatchesKnn expects list of lists as matches.
     img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,outImg=None,flags=2)
     plt.imshow(img3, 'gray'),plt.show()
 
-"""
-shows homography bound and matches (dependent on show_matches)
-"""
+
 def homography_d(kp1, kp2, img1, img2, good, show_matches=True):
+    """
+    shows homography bound and matches (dependent on show_matches)
+    """
     good = [m[0] for m in good]
     src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
     dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
@@ -54,8 +77,8 @@ def homography_d(kp1, kp2, img1, img2, good, show_matches=True):
 
     plt.imshow(img3, 'gray'),plt.show()
 
-"""
-shows only homography bound
-"""
 def homography_nm_d(kp1, kp2, img1, img2, good):
+    """
+    shows only homography bound
+    """
     homography_d(kp1, kp2, img1, img2, good, show_matches=False)
