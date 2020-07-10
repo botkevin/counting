@@ -24,7 +24,7 @@ def detector(method):
         raise Exception("use surf, sift, or orb")
     return dec
 
-def detect(dec, img):
+def detect(dec, img, mask=None):
     """Takes in a detector and image
         returns keypoints and descriptors
 
@@ -39,7 +39,7 @@ def detect(dec, img):
     des : cv2 descriptors
     """    
     # find the keypoints and descriptors
-    kp, des = dec.detectAndCompute(img,None)
+    kp, des = dec.detectAndCompute(img, mask)
     return kp, des
    
 def match(des1, des2, modus, method):

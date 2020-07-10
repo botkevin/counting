@@ -3,7 +3,7 @@ import skimage.io
 import cv2
 from matplotlib import pyplot as plt
 from selective_search import selective_search
-import detect
+import detect_organized as det
 
 
 def s_search(image):
@@ -26,7 +26,18 @@ Non Maximum Suppression (NMS)
 def check_roi(master_img, search_img, method):
     # just use surf as method for now
     # initiate detector
-    dec = detect_organized.detector(method)
-    kp_master, des_master = detect_organized.detect(dec, master_img)
+    dec = det.detector(method)
+    kp_master, des_master = det.detect(dec, master_img)
+    
+def make_mask(img_shape, rectangle): #TODO: add parameter rectangle
+    # TODO: finish this broken thing
+    x1 = rectangle[0]
+    y1 = rectangle[1]
+    x2 = rectangle[2]
+    y2 = rectangle[3]
+
+    mask = np.zeros(img_shape, np.uint8)
+    mask[y1:y2, x1:x2] = 255
+    return mask
 
     

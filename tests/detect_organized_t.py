@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../")
 import cv2
-import detect_organized
+import detect_organized as det
 import skimage.io
 from skimage.color import rgb2gray
 from skimage.transform import rescale, resize
@@ -27,12 +27,12 @@ img2 = imutils.resize(img2, width=500)
 #     opencv
 
 method = "surf"
-dec = detect_organized.detector(method)
-kp1, des1 = detect_organized.detect(dec, img1)
-kp2, des2 = detect_organized.detect(dec, img2)
+dec = det.detector(method)
+kp1, des1 = det.detect(dec, img1)
+kp2, des2 = det.detect(dec, img2)
 
-matches = detect_organized.match(des1, des2, "FLANN", method)
-good = detect_organized.ratio(matches)
+matches = det.match(des1, des2, "FLANN", method)
+good = det.ratio(matches)
 
 display.show(kp1, kp2, img1, img2, good, flag = 0)
 display.show(kp1, kp2, img1, img2, good, flag = 1)
