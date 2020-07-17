@@ -3,6 +3,8 @@ import cv2
 import matplotlib.pyplot as plt
 import imutils
 
+# DEPRECATED
+
 # Detect Keypoints
 # Help: https://docs.opencv.org/3.3.0/dc/dc3/tutorial_py_matcher.html
 #       https://achuwilson.wordpress.com/2011/08/05/object-detection-using-surf-in-opencv-part-1/

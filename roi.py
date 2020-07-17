@@ -60,7 +60,9 @@ def check_roi(master_img, search_img, method):
         rois.append((box,good))
     return rois
 
-def 
+def roi_prune(rois, scoring_method):
+    # TODO: finish this
+    return
     
 def make_mask(img_shape, rectangle):
     x1 = rectangle[0]
