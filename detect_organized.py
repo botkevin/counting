@@ -1,4 +1,5 @@
 import cv2
+import warnings
 
 def detector(method):
     """Sets up a detector based on a method
@@ -60,9 +61,26 @@ def match(des1, des2, modus, method):
 
     Returns
     -------
-    array
-        list of matches
+    [(m,n), ...]
+        list of 2 best matches int tuple form
     """
+    # if there are less than 2 descriptors
+    # then NN will fail to find 2 neighbors
+    # really shouldnt return anything anyways
+
+    if len(des1)<=2:
+        # If the source image only has 2 descriptors its
+        # probably the wrong image
+        warnings.warn("Source image only has 2 descriptors.")
+        return []
+    # getting none from roi. Let it fall thru but log it
+    if des2 is None:
+        return []
+    if len(des2)<=2:
+        return []
+
+
+    
     matches = None
     if modus == "bf":
         # NORM_HAMMING for ORB, NORM_L2(default) for SURF/else
@@ -100,6 +118,10 @@ def ratio(matches):
     http://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf#page=20
     returns good matches
     """
+    # matches empty
+    if not matches:
+        return []
+
     good = []
     for m,n in matches:
         if m.distance < .75 * n.distance: #.8 for orb mebe?

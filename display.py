@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 
 """
 displays feature matches in various ways thru pyplot
+Should really only use the show() method in this file
 flags:
  - 0: matches only
  - 1: matches w/ homography
@@ -33,14 +34,31 @@ def show(kp1, kp2, img1, img2, good, flag=0):
     """
     # params = dict(kp1=kp1, kp2=kp2, img1=img1, img2=img2, good=good)
     flag_functions={
-        0 : matches_d,
-        1 : homography_d,
-        2 : homography_nm_d
+        0 : _matches_d,
+        1 : _homography_d,
+        2 : _homography_nm_d
     }
-    flag_functions.get(flag)(kp1, kp2, img1, img2, good)
+    flag_functions.get(flag)(kp1, kp2, img1.copy(), img2.copy(), good)
 
+def show_multiple(kp1, kp2, img1, img2, good, flag=0):
+    # TODO:
+    flag_functions={
+        0 : temp
+    }
+    raise NotImplementedError
+    return
 
-def matches_d(kp1, kp2, img1, img2, good):
+def just_boxes(boxes, img):
+    image = img.copy()
+    for box in boxes:
+        start_point = box[:2] 
+        end_point = box[2:]
+        color = (255, 0, 0) 
+        thickness = 1
+        image = cv2.rectangle(image, start_point, end_point, color, thickness)
+    plt.imshow(image),plt.show()
+
+def _matches_d(kp1, kp2, img1, img2, good):
     """
     shows matches only
     """
@@ -49,7 +67,7 @@ def matches_d(kp1, kp2, img1, img2, good):
     plt.imshow(img3, 'gray'),plt.show()
 
 
-def homography_d(kp1, kp2, img1, img2, good, show_matches=True):
+def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
     """
     shows homography bound and matches (dependent on show_matches)
     """
@@ -77,8 +95,8 @@ def homography_d(kp1, kp2, img1, img2, good, show_matches=True):
 
     plt.imshow(img3, 'gray'),plt.show()
 
-def homography_nm_d(kp1, kp2, img1, img2, good):
+def _homography_nm_d(kp1, kp2, img1, img2, good):
     """
     shows only homography bound
     """
-    homography_d(kp1, kp2, img1, img2, good, show_matches=False)
+    _homography_d(kp1, kp2, img1, img2, good, show_matches=False)

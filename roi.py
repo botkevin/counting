@@ -1,3 +1,7 @@
+import sys
+sys.path.append("../")
+import score
+
 import numpy as np
 import skimage.io
 import cv2
@@ -20,10 +24,12 @@ def s_search(image):
     Utilizes selective search to find the objects in the image
     Returns boxes:(x1,y1,x2,y2)
     """
-    boxes = selective_search(image, mode='fast')
+    print("s_search start")
+    boxes = selective_search(image, mode='single')
+    print("s_search end")
     return boxes
 
-def check_roi(master_img, search_img, method):
+def check_roi_good(master_img, search_img, boxes, method):
     """Finds features and descriptors(FAD) in master
     Feeds search image into s_search; returned boxes
     Find FAD in roi
@@ -48,29 +54,44 @@ def check_roi(master_img, search_img, method):
 
     dec = det.detector(method)
     kp_master, des_master = det.detect(dec, master_img)
-    print("s_search start")
-    boxes = s_search(search_img)
-    print("s_search end")
     rois = []
+    print_i = 0
     for box in boxes:
-        mask = make_mask(search_img.shape, box)
+        # print(print_i)
+        # print_i+=1    
+        mask = _make_mask(search_img.shape, box)
         kp_child, des_child = det.detect(dec, search_img, mask)
         matches = det.match(des_master, des_child, "FLANN", method)
         good = det.ratio(matches)
-        rois.append((box,good))
+        if good: # list is not empty
+            rois.append((box,good))
+        # else:
+            # print(print_i)
+        print_i+=1
     return rois
 
-def roi_prune(rois, scoring_method):
+def check_roi_all(search_img, method):
+    # TODO: make this the roi for BOVW
+    return
+
+def roi_prune(rois, scoring_method, scoring_cutoff):
     # TODO: finish this
     return
+
+# TEMP
+def roi_prune_basic(rois, scoring_cutoff):
+    # TODO: add nms
+    return
     
-def make_mask(img_shape, rectangle):
+def _make_mask(img_shape, rectangle):
     x1 = rectangle[0]
     y1 = rectangle[1]
     x2 = rectangle[2]
     y2 = rectangle[3]
+    assert x2>x1
+    assert y2>y1
 
-    mask = np.zeros(img_shape, np.uint8)
+    mask = np.zeros(img_shape, dtype=np.uint8)
     mask[y1:y2, x1:x2] = 255
     return mask
 

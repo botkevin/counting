@@ -1,12 +1,13 @@
 import sys
 sys.path.append("../")
-import cv2
 import detect_organized as det
+import display
+
+import cv2
 import skimage.io
 from skimage.color import rgb2gray
 from skimage.transform import rescale, resize
 import imutils
-import display
 
 # img1 = skimage.io.imread("../images/screen.jpg")
 img1 = cv2.imread('../images/screen.jpg',0)

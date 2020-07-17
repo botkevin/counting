@@ -9,3 +9,11 @@
 
 2. Multi image
     - find a good way to plot geometric/spatial connections for SVM
+
+Welp basic cutoff is terrible. Ratio test cannot correctly tell if the object exists or not.
+    - doesnt even find the correct thing, too little matches
+        - try to compare not using selective search with selective search matches
+        - try matching screen to screen (same picture)
+    - display knnmatches to see if we can identify a problem
+    - it may be due to a bunch a features matching to a small square in the search patch
+        - in this case it may be better to reject matches that match to the same area

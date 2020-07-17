@@ -20,7 +20,7 @@ def test_mask():
     kp1, des1 = det.detect(dec, img1)
     print (img2.shape)
     rect = (0, 100, 100, 200)
-    mask = roi.make_mask(img2.shape, rect)
+    mask = roi._make_mask(img2.shape, rect)
     plt.imshow(mask),plt.show()
     kp2, des2 = det.detect(dec, img2, mask)
     print(len(kp1) ,"|", len(kp2))
