@@ -56,16 +56,16 @@ def matchbox(kp_master, img1, img2, rois, idxs, n=-1):
         n = len(rois)
 
     img2 = img2.copy()
-    for roi in rois[:n]:
-        box = roi[0]
+    for roii in rois[:n]:
+        box = roii[0]
         start_point = box[:2] 
         end_point = box[2:]
         color = (255, 0, 0) 
         thickness = 1
         box_img = cv2.rectangle(img2.copy(), start_point, end_point, color, thickness)
         
-        kp_child = roi[1]
-        good = roi[2]
+        kp_child = roii[1]
+        good = roii[2]
         img3 = cv2.drawMatchesKnn(img1, kp_master, box_img, kp_child, good,
                                   outImg=None, flags=2)
         plt.imshow(img3),plt.show()

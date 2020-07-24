@@ -4,6 +4,7 @@
     - selective search display
     - implement basic scoring method
     - Non Maximum Suppression (NMS)
+    - box reduction. Reduce the box so that its the perfect size for the matches
     - fancy scoring method
     - deal with 0 keypoints. queryDescriptors.type() == trainDescCollection[0].type() error
 
@@ -18,3 +19,15 @@ Welp basic cutoff is terrible. Ratio test cannot correctly tell if the object ex
     - display knnmatches to see if we can identify a problem
     - it may be due to a bunch a features matching to a small square in the search patch
         - in this case it may be better to reject matches that match to the same area
+    - a bunch of features are matching to the same area. It seems lowe's ratio is not good enough
+        - gonna try lower ratios
+            - lowering ratio doesnt really work. The same problem exists and real objects are
+          not identified well
+        - implement something that will take the dstance of points to see how clustered they are
+        - gonna try using bfmatcher instead of knnmatcher
+            - doesnt really produce noticably different results
+        - try crosscheckmatching: https://stackoverflow.com/questions/11181823/why-we-need-crosscheckmatching-for-feature
+          https://docs.opencv.org/master/dc/dc3/tutorial_py_matcher.html
+    - maybe try homography matrices and the "sureness" of homography matrix to see if its an object
+    - try other feature detection algos
+        - sift seems to perform much better than surf

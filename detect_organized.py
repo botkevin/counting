@@ -111,7 +111,7 @@ def match(des1, des2, modus, method):
         matches = flann.knnMatch(des1,des2,k=2)
     return matches
 
-def ratio(matches):
+def ratio(matches, ratio=.75):
     """
     Takes in matches and applies ratio test
     David Lowe's Ratio test 
@@ -124,7 +124,7 @@ def ratio(matches):
 
     good = []
     for m,n in matches:
-        if m.distance < .75 * n.distance: #.8 for orb mebe?
+        if m.distance < ratio * n.distance: #.8 for orb mebe?
             good.append([m])
     return good
  

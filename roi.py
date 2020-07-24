@@ -29,7 +29,7 @@ def s_search(image):
     print("s_search end")
     return boxes
 
-def check_roi_good(master_img, search_img, boxes, method):
+def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLANN"):
     """Finds features and descriptors(FAD) in master
     Feeds search image into s_search; returned boxes
     Find FAD in roi
@@ -64,8 +64,9 @@ def check_roi_good(master_img, search_img, boxes, method):
         # print_i+=1    
         mask = _make_mask(search_img.shape, box)
         kp_child, des_child = det.detect(dec, search_img, mask)
-        matches = det.match(des_master, des_child, "FLANN", method)
-        good = det.ratio(matches)
+        # TEST: changing from "FLANN" to "bf"
+        matches = det.match(des_master, des_child, modus, method) 
+        good = det.ratio(matches, ratio)
         if good: # list is not empty, we dont want empty matchboxes
             rois.append((box, kp_child, good))
         # else:
