@@ -45,9 +45,12 @@ def check_roi_good(master_img, search_img, boxes, method):
 
     Returns
     -------
-    [(box,good), ...]
-        box is the ROI given by selective search
-        good are the points found with detect_organized
+    kp_master, [(box, kp_child, good), ...]
+        kp_master: keypoints of master image
+        box : ROI given by selective search that is 
+              not empty of matches or too small
+        kp_child : keypoints of child image
+        good : points found with detect_organized
     """
     # TODO: add jobs/multithreading
     # just use surf as method for now
@@ -63,12 +66,12 @@ def check_roi_good(master_img, search_img, boxes, method):
         kp_child, des_child = det.detect(dec, search_img, mask)
         matches = det.match(des_master, des_child, "FLANN", method)
         good = det.ratio(matches)
-        if good: # list is not empty
-            rois.append((box,good))
+        if good: # list is not empty, we dont want empty matchboxes
+            rois.append((box, kp_child, good))
         # else:
             # print(print_i)
         print_i+=1
-    return rois
+    return kp_master, rois
 
 def check_roi_all(search_img, method):
     # TODO: make this the roi for BOVW

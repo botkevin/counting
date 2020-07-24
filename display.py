@@ -41,12 +41,38 @@ def show(kp1, kp2, img1, img2, good, flag=0):
     flag_functions.get(flag)(kp1, kp2, img1.copy(), img2.copy(), good)
 
 def show_multiple(kp1, kp2, img1, img2, good, flag=0):
-    # TODO:
+    # TODO: make this into a parent function
     flag_functions={
         0 : temp
     }
     raise NotImplementedError
     return
+
+# a box full of matches
+# img1 is master, img2 is child
+def matchbox(kp_master, img1, img2, rois, idxs, n=-1):
+    rois = [rois[i] for i in idxs]
+    if n == -1:
+        n = len(rois)
+
+    img2 = img2.copy()
+    for roi in rois[:n]:
+        box = roi[0]
+        start_point = box[:2] 
+        end_point = box[2:]
+        color = (255, 0, 0) 
+        thickness = 1
+        box_img = cv2.rectangle(img2.copy(), start_point, end_point, color, thickness)
+        
+        kp_child = roi[1]
+        good = roi[2]
+        img3 = cv2.drawMatchesKnn(img1, kp_master, box_img, kp_child, good,
+                                  outImg=None, flags=2)
+        plt.imshow(img3),plt.show()
+    
+
+def just_boxes_r(rois, img, idxs):
+    just_boxes([rois[i][0] for i in idxs], img)
 
 def just_boxes(boxes, img):
     image = img.copy()

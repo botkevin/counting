@@ -14,6 +14,7 @@ Welp basic cutoff is terrible. Ratio test cannot correctly tell if the object ex
     - doesnt even find the correct thing, too little matches
         - try to compare not using selective search with selective search matches
         - try matching screen to screen (same picture)
+    - have to try with the new images
     - display knnmatches to see if we can identify a problem
     - it may be due to a bunch a features matching to a small square in the search patch
         - in this case it may be better to reject matches that match to the same area

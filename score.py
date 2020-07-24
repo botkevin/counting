@@ -17,9 +17,12 @@ def basic_cutoff(rois, scoring_cutoff):
 
     Parameters
     ----------
-    rois : [(box,good), ...]
-        box is the ROI given by selective search
-        good are the points found with detect_organized
+    rois : [(box, kp_child, good), ...]
+        kp_master: keypoints of master image
+        box : ROI given by selective search that is 
+              not empty of matches or too small
+        kp_child : keypoints of child image
+        good : points found with detect_organized
     scoring_cutoff : int
 
     Returns
@@ -29,7 +32,7 @@ def basic_cutoff(rois, scoring_cutoff):
     """
     idxs = []
     for i in range(len(rois)):
-        good = rois[i][1]
+        good = rois[i][2]
         score = basic(good)
         if score >= scoring_cutoff:
             idxs.append(i)
