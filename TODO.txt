@@ -11,23 +11,28 @@
 2. Multi image
     - find a good way to plot geometric/spatial connections for SVM
 
+<> : means tried
+
 Welp basic cutoff is terrible. Ratio test cannot correctly tell if the object exists or not.
     - doesnt even find the correct thing, too little matches
-        - try to compare not using selective search with selective search matches
+        - <> try to compare not using selective search with selective search matches 
         - try matching screen to screen (same picture)
-    - have to try with the new images
-    - display knnmatches to see if we can identify a problem
+    - <> have to try with the new images 
+    - try with negative examples (non matches)
+    - <> display knnmatches to see if we can identify a problem 
     - it may be due to a bunch a features matching to a small square in the search patch
         - in this case it may be better to reject matches that match to the same area
     - a bunch of features are matching to the same area. It seems lowe's ratio is not good enough
-        - gonna try lower ratios
-            - lowering ratio doesnt really work. The same problem exists and real objects are
-          not identified well
+        - <> gonna try lower ratios
+            - lowering ratio doesnt really work. The same problem exists and real objects are not identified well
         - implement something that will take the dstance of points to see how clustered they are
-        - gonna try using bfmatcher instead of knnmatcher
+        - <> gonna try using bfmatcher instead of knnmatcher
             - doesnt really produce noticably different results
-        - try crosscheckmatching: https://stackoverflow.com/questions/11181823/why-we-need-crosscheckmatching-for-feature
-          https://docs.opencv.org/master/dc/dc3/tutorial_py_matcher.html
+        - try crosscheckmatching: https://stackoverflow.com/questions/11181823/why-we-need-crosscheckmatching-for-feature | https://docs.opencv.org/master/dc/dc3/tutorial_py_matcher.html
     - maybe try homography matrices and the "sureness" of homography matrix to see if its an object
     - try other feature detection algos
         - sift seems to perform much better than surf
+    - <> for the screen try using only the car. i think the straight edge features are getting confused
+
+Crosscheck might work better with the skeleton structure. Maybe try both.
+    - need to figure out display homography

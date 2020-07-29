@@ -79,8 +79,6 @@ def match(des1, des2, modus, method):
     if len(des2)<=2:
         return []
 
-
-    
     matches = None
     if modus == "bf":
         # NORM_HAMMING for ORB, NORM_L2(default) for SURF/else
@@ -111,12 +109,53 @@ def match(des1, des2, modus, method):
         matches = flann.knnMatch(des1,des2,k=2)
     return matches
 
+def match_and_crosscheck(des1, des2, modus, method):
+    if len(des1)<=2:
+        # If the source image only has 2 descriptors its
+        # probably the wrong image
+        warnings.warn("Source image only has 2 descriptors.")
+        return []
+    # getting none from roi. Let it fall thru but log it
+    if des2 is None:
+        return []
+    if len(des2)<=2:
+        return []
+
+    matches = None
+    if modus == "bf":
+        # NORM_HAMMING for ORB, NORM_L2(default) for SURF/else
+        bf = None
+        if method == "orb":
+            bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+        else:
+            bf = cv2.BFMatcher(crossCheck=True)
+        matches = bf.knnMatch(des1,des2, k=1)
+
+    elif modus == "FLANN":
+        index_params, search_params = None, None
+        if method == "orb":
+            FLANN_INDEX_LSH = 6
+            index_params = dict (algorithm = FLANN_INDEX_LSH,
+                                table_number = 6, # 12
+                                key_size = 12,     # 20
+                                multi_probe_level = 1) #2
+        else:
+            FLANN_INDEX_KDTREE = 0
+            index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
+        # This is FLANN # of times recursive search 
+        # Higher number is more accurate at the cost
+        # of more computation. Below is default value.
+        search_params = dict(checks=50, crossCheck=True)
+        flann = cv2.FlannBasedMatcher(index_params, search_params)
+        matches = flann.knnMatch(des1,des2,k=1)
+    return matches
+
 def ratio(matches, ratio=.75):
     """
     Takes in matches and applies ratio test
     David Lowe's Ratio test 
     http://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf#page=20
-    returns good matches
+    returns good matches : [[m],...]
     """
     # matches empty
     if not matches:

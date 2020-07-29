@@ -97,7 +97,9 @@ def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
     """
     shows homography bound and matches (dependent on show_matches)
     """
-    good = [m[0] for m in good]
+    # if statment is for crosscheck
+    # crosscheck will return empty lists for nonmatched terms
+    good = [m[0] for m in good if m] 
     src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
     dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
     M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)

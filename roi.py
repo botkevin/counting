@@ -29,7 +29,7 @@ def s_search(image):
     print("s_search end")
     return boxes
 
-def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLANN"):
+def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLANN", crosscheck=False):
     """Finds features and descriptors(FAD) in master
     Feeds search image into s_search; returned boxes
     Find FAD in roi
@@ -42,6 +42,16 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
         target image with object
     method : string
         "orb","surf","sift"
+    ratio : float
+        ratio for lowe's ratio test
+        DEFAULT = .75
+    modus : string
+        method to calculate nearest neighbors. "bf" or "FLANN"
+        See detect_organized.match()
+        DEFAULT = "FLANN"
+    crosscheck : boolean
+        crosscheck or ratio
+        DEFAULT = False
 
     Returns
     -------
@@ -65,8 +75,12 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
         mask = _make_mask(search_img.shape, box)
         kp_child, des_child = det.detect(dec, search_img, mask)
         # TEST: changing from "FLANN" to "bf"
-        matches = det.match(des_master, des_child, modus, method) 
-        good = det.ratio(matches, ratio)
+        good = None
+        if crosscheck:
+            good = det.match_and_crosscheck(des_master, des_child, modus, method)
+        else:
+            matches = det.match(des_master, des_child, modus, method) 
+            good = det.ratio(matches, ratio)
         if good: # list is not empty, we dont want empty matchboxes
             rois.append((box, kp_child, good))
         # else:

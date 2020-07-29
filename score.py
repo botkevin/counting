@@ -5,7 +5,10 @@ def basic(good):
     """
     determines score based on number of good points
     """
-    return len(good)
+    # take out empty arrays
+    # crosscheck returns empty arrays for nonmatched descriptors
+    good_pruned = [m for m in good if m] 
+    return len(good_pruned)
 
 # cutoff function should be in here and not roi.py
 # because roi shouldnt have to account for different
