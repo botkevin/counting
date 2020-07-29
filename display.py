@@ -1,3 +1,5 @@
+import trim
+
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -50,22 +52,31 @@ def show_multiple(kp1, kp2, img1, img2, good, flag=0):
 
 # a box full of matches
 # img1 is master, img2 is child
-def matchbox(kp_master, img1, img2, rois, idxs, n=-1):
+def matchbox(kp_master, img1, img2, rois, idxs, n=-1, homography=False):
     rois = [rois[i] for i in idxs]
     if n == -1:
         n = len(rois)
 
     img2 = img2.copy()
-    for roii in rois[:n]:
+    for i in range(n):
+        roii = rois[i]
         box = roii[0]
         start_point = box[:2] 
         end_point = box[2:]
         color = (255, 0, 0) 
         thickness = 1
-        box_img = cv2.rectangle(img2.copy(), start_point, end_point, color, thickness)
         
         kp_child = roii[1]
         good = roii[2]
+
+        # bounding box
+        box_img = cv2.rectangle(img2.copy(), start_point, end_point, color, thickness)
+        
+        # homography
+        if homography:
+            dst, _, matchesMask = trim.homography(kp_master, kp_child, img1.shape[:2], good)
+            box_img = cv2.polylines(box_img,[np.int32(dst)],True,(0,0,255),1, cv2.LINE_AA)
+        
         img3 = cv2.drawMatchesKnn(img1, kp_master, box_img, kp_child, good,
                                   outImg=None, flags=2)
         plt.imshow(img3),plt.show()
@@ -84,6 +95,26 @@ def just_boxes(boxes, img):
         image = cv2.rectangle(image, start_point, end_point, color, thickness)
     plt.imshow(image),plt.show()
 
+def homography_boxes(kp_master, img1, img2, rois, idxs):
+    #TODO
+    rois = [rois[i] for i in idxs]
+    img2 = img2.copy()
+    for i in range(len(rois)):
+        roii = rois[i]
+        box = roii[0]
+        # start_point = box[:2] 
+        # end_point = box[2:]
+        # color = (255, 0, 0) 
+        # thickness = 1
+        # box_img = cv2.rectangle(img2, start_point, end_point, color, thickness)
+        
+        kp_child = roii[1]
+        good = roii[2]
+        dst, _, matchesMask = trim.homography(kp_master, kp_child, img1.shape[:2], good)
+        img2 = cv2.polylines(img2,[np.int32(dst)],True,(0,0,255),1, cv2.LINE_AA)
+    plt.imshow(img2),plt.show()
+
+
 def _matches_d(kp1, kp2, img1, img2, good):
     """
     shows matches only
@@ -97,20 +128,14 @@ def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
     """
     shows homography bound and matches (dependent on show_matches)
     """
-    # if statment is for crosscheck
     # crosscheck will return empty lists for nonmatched terms
-    good = [m[0] for m in good if m] 
-    src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
-    dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
-    M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
-    matchesMask = mask.ravel().tolist()
+    good_n = [a[0] for a in good if a] 
 
-    h,w = img1.shape
-    pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-    dst = cv2.perspectiveTransform(pts,M)
+    dst, _, matchesMask = trim.homography(kp1, kp2, img1.shape, good)
 
     img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3, cv2.LINE_AA)
 
+    # show matches
     if not show_matches:
         matchesMask = [0]*len(matchesMask)
 
@@ -119,7 +144,7 @@ def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
                    matchesMask = matchesMask, # draw only inliers
                    flags = 2)
 
-    img3 = cv2.drawMatches(img1,kp1,img2,kp2,good,None,**draw_params)
+    img3 = cv2.drawMatches(img1,kp1,img2,kp2,good_n,None,**draw_params)
 
     plt.imshow(img3, 'gray'),plt.show()
 

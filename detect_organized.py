@@ -110,6 +110,17 @@ def match(des1, des2, modus, method):
     return matches
 
 def match_and_crosscheck(des1, des2, modus, method):
+    """
+    See match (above) for parameters
+    Instead of returning the two best top matches for use with the ratio test,
+    we only keep matches where the NN matching is consistent with both descriptors
+    See cv2 BFMatcher crossCheck docs for more information
+
+    Returns
+    -------
+    [[m],...]
+        crosschecked matches. Empty array ([]) for descriptors with no match
+    """
     if len(des1)<=2:
         # If the source image only has 2 descriptors its
         # probably the wrong image

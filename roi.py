@@ -50,7 +50,8 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
         See detect_organized.match()
         DEFAULT = "FLANN"
     crosscheck : boolean
-        crosscheck or ratio
+        crosscheck if true or ratio if false
+        Crosscheck works much better than ratio
         DEFAULT = False
 
     Returns

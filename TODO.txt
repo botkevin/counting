@@ -36,3 +36,7 @@ Welp basic cutoff is terrible. Ratio test cannot correctly tell if the object ex
 
 Crosscheck might work better with the skeleton structure. Maybe try both.
     - need to figure out display homography
+    - crosscheck works beautifully, but flann crosscheck does not currently work
+        - might just skip ahead on that flann crosscheck
+    - use homography to reduce matchboxes
+        - NMS with homography? Maybe just extend homography matrix to rectangle from parallelogram
