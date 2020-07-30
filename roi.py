@@ -56,7 +56,7 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
 
     Returns
     -------
-    kp_master, [(box, kp_child, good), ...]
+    kp_master, [[box, kp_child, good], ...]
         kp_master: keypoints of master image
         box : ROI given by selective search that is 
               not empty of matches or too small
@@ -83,24 +83,11 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
             matches = det.match(des_master, des_child, modus, method) 
             good = det.ratio(matches, ratio)
         if good: # list is not empty, we dont want empty matchboxes
-            rois.append((box, kp_child, good))
+            rois.append([box, kp_child, good])
         # else:
             # print(print_i)
         print_i+=1
     return kp_master, rois
-
-def check_roi_all(search_img, method):
-    # TODO: make this the roi for BOVW
-    return
-
-def roi_prune(rois, scoring_method, scoring_cutoff):
-    # TODO: finish this
-    return
-
-# TEMP
-def roi_prune_basic(rois, scoring_cutoff):
-    # TODO: add nms
-    return
     
 def _make_mask(img_shape, rectangle):
     x1 = rectangle[0]

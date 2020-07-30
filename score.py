@@ -1,7 +1,8 @@
+import numpy as np
 
 # TODO: add master methods for all the cutoffs
 
-def basic(good):
+def _basic(good):
     """
     determines score based on number of good points
     """
@@ -36,10 +37,46 @@ def basic_cutoff(rois, scoring_cutoff):
     idxs = []
     for i in range(len(rois)):
         good = rois[i][2]
-        score = basic(good)
+        score = _basic(good)
         if score >= scoring_cutoff:
             idxs.append(i)
     return idxs
+
+def _angle(p1,p2,p3):
+    """
+    finds angle between p1 and p3 with p2 as the vertex 
+    (lines from p1 -> p2 -> p3)
+    Utilizes definition of vector dot product
+    """
+    v1 = [p1[0]-p2[0], p1[1]-p2[1]] # p1-p2
+    v2 = [p3[0]-p2[0], p3[1]-p2[1]] # p3-p2
+    num = np.dot(v1,v2)
+    denom = np.linalg.norm(v1) * np.linalg.norm(v2)
+    return np.degrees(np.arccos(num/denom))
+
+def angle_cutoff(rois, ang_thresh): # TODO: accept roi instead
+    """
+    IMPORTANT: remember to use trim.idx_trim before you use this method
+    cuts of angles 90 +- ang_thresh
+    ang_thresh is in degrees
+    """
+    idxs = []
+    for i in range(len(rois)):
+        b = rois[i][3]
+        ang = [0,0,0,0]
+        ang[0] = _angle(b[0][0], b[1][0], b[2][0])
+        ang[1] = _angle(b[1][0], b[2][0], b[3][0])
+        ang[2] = _angle(b[2][0], b[3][0], b[0][0])
+        ang[3] = 360 - ang[0] - ang[1] - ang[2]
+        in_bounds = True
+        for a in ang:
+            if a > 90+ang_thresh or a < 90-ang_thresh:
+                in_bounds = False
+        if in_bounds:
+            idxs.append(i)
+    return idxs
+    
+    
 
 # we can build fancy clustering scoring methods here
 # unsure if the make skeleton code would also be here

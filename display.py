@@ -52,8 +52,20 @@ def show_multiple(kp1, kp2, img1, img2, good, flag=0):
 
 # a box full of matches
 # img1 is master, img2 is child
-def matchbox(kp_master, img1, img2, rois, idxs, n=-1, homography=False):
-    rois = [rois[i] for i in idxs]
+def matchbox(kp_master, img1, img2, rois, n=-1, homography=False):
+    """ shows each box and homography(optional) with respective matches
+        individually for examination. Used for testing purposes
+        This method calculates everything again so should technically be
+        inefficient, but should only be used for testing, so shouldnt 
+        really matter
+
+    Parameters
+    ----------
+    n : int, optional
+        number of boxes to show, by default -1
+    homography : bool, optional
+        flag to show homography, by default False
+    """
     if n == -1:
         n = len(rois)
 
@@ -74,7 +86,7 @@ def matchbox(kp_master, img1, img2, rois, idxs, n=-1, homography=False):
         
         # homography
         if homography:
-            dst, _, matchesMask = trim.homography(kp_master, kp_child, img1.shape[:2], good)
+            dst, matchesMask = roii[3], roii[4]
             box_img = cv2.polylines(box_img,[np.int32(dst)],True,(0,0,255),1, cv2.LINE_AA)
         
         img3 = cv2.drawMatchesKnn(img1, kp_master, box_img, kp_child, good,
@@ -83,9 +95,15 @@ def matchbox(kp_master, img1, img2, rois, idxs, n=-1, homography=False):
     
 
 def just_boxes_r(rois, img, idxs):
+    """
+    given an array of rois and indexes, displays specific boxes on the image
+    """
     just_boxes([rois[i][0] for i in idxs], img)
 
 def just_boxes(boxes, img):
+    """
+    given an array of boxes, displays them on the image
+    """
     image = img.copy()
     for box in boxes:
         start_point = box[:2] 
@@ -95,25 +113,22 @@ def just_boxes(boxes, img):
         image = cv2.rectangle(image, start_point, end_point, color, thickness)
     plt.imshow(image),plt.show()
 
-def homography_boxes(kp_master, img1, img2, rois, idxs):
-    #TODO
-    rois = [rois[i] for i in idxs]
-    img2 = img2.copy()
-    for i in range(len(rois)):
-        roii = rois[i]
-        box = roii[0]
-        # start_point = box[:2] 
-        # end_point = box[2:]
-        # color = (255, 0, 0) 
-        # thickness = 1
-        # box_img = cv2.rectangle(img2, start_point, end_point, color, thickness)
-        
-        kp_child = roii[1]
-        good = roii[2]
-        dst, _, matchesMask = trim.homography(kp_master, kp_child, img1.shape[:2], good)
-        img2 = cv2.polylines(img2,[np.int32(dst)],True,(0,0,255),1, cv2.LINE_AA)
-    plt.imshow(img2),plt.show()
+def homography_boxes(roi, img2):
+    """displays all homography boxes on the image.
 
+    Parameters
+    ----------
+    roi : [[box, kp_child, good, dst, matchesMask], ...]
+        appends to roii in place and returns roi
+        dst : [[[int32, int32]], ...x4]
+            array of 4 points that make the homography box
+        matchesMask : mask of the homography box
+    """
+    img2 = img2.copy()
+    for roii in roi:
+        dst = roii[3]
+        img2 = cv2.polylines(img2,[dst],True,(0,0,255),1, cv2.LINE_AA)
+    plt.imshow(img2),plt.show()
 
 def _matches_d(kp1, kp2, img1, img2, good):
     """
