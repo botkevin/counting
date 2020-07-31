@@ -33,6 +33,7 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
     """Finds features and descriptors(FAD) in master
     Feeds search image into s_search; returned boxes
     Find FAD in roi
+    Should use with crosscheck=True almost always
 
     Parameters
     ----------

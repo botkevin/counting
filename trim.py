@@ -12,7 +12,7 @@ def homography(kp1, kp2, img1_shape, good):
     M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
     matchesMask = mask.ravel().tolist()
 
-    h,w = img1_shape
+    h,w = img1_shape[:2]
     pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
     dst = cv2.perspectiveTransform(pts,M)
     # M is just used for perspective transform. I dont think we ever need it
