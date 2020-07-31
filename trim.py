@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from shapely.geometry import Polygon
 
 def idx_trim(rois, idxs):
     rois = [rois[i] for i in idxs]
@@ -45,7 +46,7 @@ def homography_all(kp_master, img1, img2, rois):
     return rois
 
 # TODO: add score
-def nms(boxes, thresh):
+def nms_boxes(boxes, thresh):
     """Non-Maximum Suppression
         Given overlapping bounding boxes and a tuneable threshold
         finds correct bounding boxes
@@ -70,7 +71,6 @@ def nms(boxes, thresh):
     if boxes.dtype.kind == "i":
         boxes = boxes.astype("float")
 
-    # initialize the list of picked indexes	to return
     pick = []
 
     x1 = boxes[:,0]
@@ -78,7 +78,6 @@ def nms(boxes, thresh):
     x2 = boxes[:,2]
     y2 = boxes[:,3]
 
-    # compute the area of the bounding boxes
     area = (x2 - x1 + 1) * (y2 - y1 + 1)
 
     # TODO: sort this based on score
@@ -114,3 +113,57 @@ def nms(boxes, thresh):
             np.where(overlap > thresh)[0])))
 
     return boxes[pick].astype("int")
+
+def _overlap(roii, roij):
+    """
+    Find overlap percentage of two roii boxes
+    """
+    shape2 = roii[3] # dst
+    shape1 = roij[3]
+    # shape is in form of dst : [[[int32, int32]], ...x4]
+    # turn it into [[int32, int32], ...x4]
+    shape2 = [s[0] for s in shape2]
+    shape1 = [s[0] for s in shape1]
+    p1 = Polygon(shape2)
+    p2 = Polygon(shape1)
+    # print(p1.intersects(p2))
+    # overlap calculation
+    return p1.intersection(p2).area/p1.area
+
+def nms_homography(rois, overlap_thresh, score_fn):
+    # if there are no boxes, return an empty list
+    if len(rois) == 0:
+        return []
+
+    # initialize the list of picked indexes
+    pick = []
+
+    score_arr = [score_fn(roii) for roii in rois]
+    idxs = np.argsort(score_arr)
+    print (idxs)
+
+    while len(idxs) > 0:
+        # grab the last index in the indexes list, add the index
+        # value to the list of picked indexes, then initialize
+        # the suppression list (i.e. indexes that will be deleted)
+        # using the last index
+        last = len(idxs) - 1
+        i = idxs[last]
+        pick.append(i)
+        suppress = [last]
+
+        for pos in range(last):
+            # grab the current index
+            j = idxs[pos]
+
+            # find overlap of box with index j and i
+            overlap = _overlap(rois[i], rois[j])
+            print(overlap)
+            if overlap > overlap_thresh:
+            # delete this one
+                suppress.append(pos)
+
+        idxs = np.delete(idxs, suppress)
+        print (idxs)
+    
+    return pick

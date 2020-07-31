@@ -2,12 +2,13 @@ import numpy as np
 
 # TODO: add master methods for all the cutoffs
 
-def _basic(good):
+def _basic_s(roii):
     """
     determines score based on number of good points
     """
     # take out empty arrays
     # crosscheck returns empty arrays for nonmatched descriptors
+    good = roii[2]
     good_pruned = [m for m in good if m] 
     return len(good_pruned)
 
@@ -36,8 +37,8 @@ def basic_cutoff(rois, scoring_cutoff):
     """
     idxs = []
     for i in range(len(rois)):
-        good = rois[i][2]
-        score = _basic(good)
+        roii = rois[i]
+        score = _basic_s(roii)
         if score >= scoring_cutoff:
             idxs.append(i)
     return idxs
@@ -76,7 +77,18 @@ def angle_cutoff(rois, ang_thresh): # TODO: accept roi instead
             idxs.append(i)
     return idxs
     
-    
+def _mask_basic_s(roii):
+    """
+    score based on basic score, but only counts good points
+    inside the homography mask
+    """
+    matchesMask = roii[4]
+    score = 0
+    for m in matchesMask:
+        if m == 1:
+            # matchesMask is 1 if in, 0 if not
+            score += 1
+    return score
 
 # we can build fancy clustering scoring methods here
 # unsure if the make skeleton code would also be here

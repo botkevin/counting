@@ -52,7 +52,7 @@ def show_multiple(kp1, kp2, img1, img2, good, flag=0):
 
 # a box full of matches
 # img1 is master, img2 is child
-def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mmask=False):
+def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
     """ shows each box and homography(optional) with respective matches
         individually for examination. Used for testing purposes
 
@@ -62,6 +62,8 @@ def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mmask=False):
         number of boxes to show, by default -1
     homography : bool, optional
         flag to show homography, by default False
+    mMask : bool, optional
+        flag to apply matcheMask - shows only matches within homography, by default False
     """
     if n == -1:
         n = len(rois)
@@ -77,24 +79,23 @@ def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mmask=False):
         
         kp_child = roii[1]
         good = roii[2]
+        # crosscheck will return empty lists for nonmatched terms
+        # need to prune for matchesMask to work. len matchesMask == len good_n
         good_n = [a[0] for a in good if a]
 
         # bounding box
         box_img = cv2.rectangle(img2.copy(), start_point, end_point, color, thickness)
         
-        # testing
         good_n = [a[0] for a in good if a] 
 
         draw_params = dict(singlePointColor = None,
                         matchesMask = None,
                         flags = 2)
 
-        # dst, _, matchesMask = trim.homography(kp_master, kp_child, img1.shape, good)
-        dst, matchesMask = roii[3], roii[4]
-
         if homography:
+            dst, matchesMask = roii[3], roii[4]
             box_img = cv2.polylines(box_img,[np.int32(dst)],True,(0,0,255),1, cv2.LINE_AA)
-            if mmask:
+            if mMask:
                 # for some reason drawMatches does not like if I add or change this dictionary
                 # but making another one works.
                 draw_params = dict(singlePointColor = None,
