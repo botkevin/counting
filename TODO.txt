@@ -40,3 +40,7 @@ Crosscheck might work better with the skeleton structure. Maybe try both.
         - might just skip ahead on that flann crosscheck
     - use homography to reduce matchboxes
         - NMS with homography? Maybe just extend homography matrix to rectangle from parallelogram
+
+Currently is poor with group up objects
+    - due to selective search finding a rectangle with multiple objects in it
+    - might be solved with a simple 45 degree rotation and rerun.

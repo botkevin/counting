@@ -9,15 +9,24 @@ from matplotlib import pyplot as plt
 from selective_search import selective_search
 import detect_organized as det
 
-"""    
-Finds features and descriptors(FAD) in master
-Feeds search image into s_search; returned roi
-Find FAD in roi
-Given FAD, check score: score.py
-score cutoff?
-Put all of roi back into search_img parent
-Non Maximum Suppression (NMS)
-"""
+    """
+    Finds and returns regions of interest(roi) for further processing
+    If looking for definition of rois
+    ---------
+    rois : [[box, kp_child, good, dst(?), matchesMask(?)], ...]
+        kp_master: keypoints of master image
+        box : ROI given by selective search that is not empty of matches or too small
+        kp_child : keypoints of child image
+        good : points found with detect_organized. be careful because crosscheck leaves
+               empty arrays for nonmatched descriptors, which may have to be filtered out
+               See trim.homography and the homography related methods in display
+        dst : [[[int32, int32]], ...x4]
+            array of 4 points that make the homography box
+        matchesMask : mask of the homography box
+
+        IMPORTANT: dst and matchesMask will only appear after homography_all is called
+        Trying to run functions that depend on these will raise an out of bounds error
+    """
 
 def s_search(image):
     """ 
@@ -70,27 +79,24 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
     dec = det.detector(method)
     kp_master, des_master = det.detect(dec, master_img)
     rois = []
-    print_i = 0
-    for box in boxes:
-        # print(print_i)
-        # print_i+=1    
+    for box in boxes:  
         mask = _make_mask(search_img.shape, box)
         kp_child, des_child = det.detect(dec, search_img, mask)
-        # TEST: changing from "FLANN" to "bf"
         good = None
         if crosscheck:
             good = det.match_and_crosscheck(des_master, des_child, modus, method)
         else:
+            # use ratio test
             matches = det.match(des_master, des_child, modus, method) 
             good = det.ratio(matches, ratio)
         if good: # list is not empty, we dont want empty matchboxes
             rois.append([box, kp_child, good])
-        # else:
-            # print(print_i)
-        print_i+=1
     return kp_master, rois
     
 def _make_mask(img_shape, rectangle):
+    """
+    simple method to make a mask to only use inside of rectangle
+    """
     x1 = rectangle[0]
     y1 = rectangle[1]
     x2 = rectangle[2]

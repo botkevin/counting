@@ -7,7 +7,10 @@ def idx_trim(rois, idxs):
     return rois
 
 def homography(kp1, kp2, img1_shape, good):
-    good_n = [a[0] for a in good if a] 
+    # crosscheck will return empty lists for nonmatched terms
+    # need to prune for matchesMask to work. len matchesMask == len good_n
+    good_n = [a[0] for a in good if a]
+
     src_pts = np.float32([ kp1[m.queryIdx].pt for m in good_n ]).reshape(-1,1,2)
     dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good_n ]).reshape(-1,1,2)
     M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
@@ -36,16 +39,17 @@ def homography_all(kp_master, img1, img2, rois):
     homography_boxes = [] # return value
     for i in range(len(rois)):
         roii = rois[i]
-        box = roii[0]
-        
+        box = roii[0]        
         kp_child = roii[1]
         good = roii[2]
+
         dst, _, matchesMask = homography(kp_master, kp_child, img1.shape[:2], good)
         roii.append(np.int32(dst))
         roii.append(matchesMask)
     return rois
 
-# TODO: add score
+# DEPRECATED
+# Is currently not used and not anticipated to be used anywhere in the near future
 def nms_boxes(boxes, thresh):
     """Non-Maximum Suppression
         Given overlapping bounding boxes and a tuneable threshold
@@ -88,8 +92,6 @@ def nms_boxes(boxes, thresh):
     idxs = np.argsort(area)[::-1]
 
     while len(idxs) > 0:
-        # grab the last index in the indexes list and add the
-        # index value to the list of picked indexes
         last = len(idxs) - 1
         i = idxs[last]
         pick.append(i)

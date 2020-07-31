@@ -1,6 +1,13 @@
 import numpy as np
 
-# TODO: add master methods for all the cutoffs
+    """scoring methods and cutoff methods are in here
+    """
+
+# cutoff function should be in here and not roi.py
+# because roi shouldnt have to account for different
+# scoring methods, and differente cutoffs require
+# different inputs and processing for scoring, which
+# is score.py's job
 
 def _basic_s(roii):
     """
@@ -12,11 +19,7 @@ def _basic_s(roii):
     good_pruned = [m for m in good if m] 
     return len(good_pruned)
 
-# cutoff function should be in here and not roi.py
-# because roi shouldnt have to account for different
-# scoring methods, and differente cutoffs require
-# different inputs and processing for scoring, which
-# is score.py's job
+
 def basic_cutoff(rois, scoring_cutoff):
     """basic scoring cutoff functions
 
@@ -55,7 +58,7 @@ def _angle(p1,p2,p3):
     denom = np.linalg.norm(v1) * np.linalg.norm(v2)
     return np.degrees(np.arccos(num/denom))
 
-def angle_cutoff(rois, ang_thresh): # TODO: accept roi instead
+def angle_cutoff(rois, ang_thresh):
     """
     IMPORTANT: remember to use trim.idx_trim before you use this method
     cuts of angles 90 +- ang_thresh

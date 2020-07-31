@@ -4,14 +4,8 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-"""
-displays feature matches in various ways thru pyplot
-Should really only use the show() method in this file
-flags:
- - 0: matches only
- - 1: matches w/ homography
- - 2: homography only
-"""
+    """displays feature matches in various ways thru pyplot.
+    """
 def show(kp1, kp2, img1, img2, good, flag=0):
     """displays feature matches in various ways thru pyplot
 
@@ -42,19 +36,12 @@ def show(kp1, kp2, img1, img2, good, flag=0):
     }
     flag_functions.get(flag)(kp1, kp2, img1.copy(), img2.copy(), good)
 
-def show_multiple(kp1, kp2, img1, img2, good, flag=0):
-    # TODO: make this into a parent function
-    flag_functions={
-        0 : temp
-    }
-    raise NotImplementedError
-    return
-
 # a box full of matches
 # img1 is master, img2 is child
 def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
-    """ shows each box and homography(optional) with respective matches
-        individually for examination. Used for testing purposes
+    """ shows each box from selective search and homography(optional)
+        with respective matches individually for examination. 
+        Used for testing purposes
 
     Parameters
     ----------
@@ -79,14 +66,13 @@ def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
         
         kp_child = roii[1]
         good = roii[2]
+
         # crosscheck will return empty lists for nonmatched terms
         # need to prune for matchesMask to work. len matchesMask == len good_n
         good_n = [a[0] for a in good if a]
 
         # bounding box
         box_img = cv2.rectangle(img2.copy(), start_point, end_point, color, thickness)
-        
-        good_n = [a[0] for a in good if a] 
 
         draw_params = dict(singlePointColor = None,
                         matchesMask = None,
@@ -96,8 +82,8 @@ def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
             dst, matchesMask = roii[3], roii[4]
             box_img = cv2.polylines(box_img,[np.int32(dst)],True,(0,0,255),1, cv2.LINE_AA)
             if mMask:
-                # for some reason drawMatches does not like if I add or change this dictionary
-                # but making another one works.
+                # for some reason drawMatches does not like if I add or change
+                # this dictionary, but making another one works.
                 draw_params = dict(singlePointColor = None,
                         matchesMask = matchesMask,
                         flags = 2)
@@ -171,8 +157,6 @@ def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
                    singlePointColor = None,
                    matchesMask = matchesMask, # draw only inliers
                    flags = 2)
-
-    print('kp2:',len(kp2)),print('good:',len(good_n)),print('mask:',len(matchesMask))
 
     img3 = cv2.drawMatches(img1,kp1,img2,kp2,good_n,None,**draw_params)
 
