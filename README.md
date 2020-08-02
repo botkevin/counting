@@ -1,7 +1,7 @@
 # counting
 
 ## feature detection
-A framework for feature detection. Framework supports (1)[```ORB```, ```SIFT```, and ```SURF```] with both (2)[```FLANN``` and ```brute-force```] nearest neigbor matching with a final pruning algorithm of (3)[```crosscheck``` or ```Lowe's ratio test```]. Use ```detect_organized.py``` for basic feature detection and display.py to see results. Look at ```detect_organized_t.py``` under ```/tests``` for an example
+A framework for feature detection. Framework supports (1)[```ORB```, ```SIFT```, and ```SURF```] with both (2)[```FLANN``` and ```brute-force```] nearest neigbor matching with a final pruning algorithm of (3)[```crosscheck``` or ```Lowe's ratio test```]. Use ```detect_organized.py``` for basic feature detection and ```display.py``` to see results. Look at ```detect_organized_t.py``` under ```/tests``` for an example
 
 ## object detection
 This project's main goal is to detect multiple objects. The method is composed of:
