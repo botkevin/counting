@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 from shapely.geometry import Polygon
 
+""" methods for reduction of matchboxes
+"""
+
 def idx_trim(rois, idxs):
     rois = [rois[i] for i in idxs]
     return rois

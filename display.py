@@ -4,8 +4,9 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-    """displays feature matches in various ways thru pyplot.
-    """
+"""displays feature matches in various ways thru pyplot.
+"""
+
 def show(kp1, kp2, img1, img2, good, flag=0):
     """displays feature matches in various ways thru pyplot
 

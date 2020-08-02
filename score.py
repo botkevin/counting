@@ -1,7 +1,7 @@
 import numpy as np
 
-    """scoring methods and cutoff methods are in here
-    """
+"""scoring methods and cutoff methods are in here
+"""
 
 # cutoff function should be in here and not roi.py
 # because roi shouldnt have to account for different

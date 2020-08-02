@@ -9,24 +9,24 @@ from matplotlib import pyplot as plt
 from selective_search import selective_search
 import detect_organized as det
 
-    """
-    Finds and returns regions of interest(roi) for further processing
-    If looking for definition of rois
-    ---------
-    rois : [[box, kp_child, good, dst(?), matchesMask(?)], ...]
-        kp_master: keypoints of master image
-        box : ROI given by selective search that is not empty of matches or too small
-        kp_child : keypoints of child image
-        good : points found with detect_organized. be careful because crosscheck leaves
-               empty arrays for nonmatched descriptors, which may have to be filtered out
-               See trim.homography and the homography related methods in display
-        dst : [[[int32, int32]], ...x4]
-            array of 4 points that make the homography box
-        matchesMask : mask of the homography box
+"""
+Finds and returns regions of interest(roi) for further processing
+If looking for definition of rois
+---------
+rois : [[box, kp_child, good, dst(?), matchesMask(?)], ...]
+    kp_master: keypoints of master image
+    box : ROI given by selective search that is not empty of matches or too small
+    kp_child : keypoints of child image
+    good : points found with detect_organized. be careful because crosscheck leaves
+            empty arrays for nonmatched descriptors, which may have to be filtered out
+            See trim.homography and the homography related methods in display
+    dst : [[[int32, int32]], ...x4]
+        array of 4 points that make the homography box
+    matchesMask : mask of the homography box
 
-        IMPORTANT: dst and matchesMask will only appear after homography_all is called
-        Trying to run functions that depend on these will raise an out of bounds error
-    """
+    IMPORTANT: dst and matchesMask will only appear after homography_all is called
+    Trying to run functions that depend on these will raise an out of bounds error
+"""
 
 def s_search(image):
     """ 

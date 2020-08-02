@@ -1,8 +1,8 @@
 import cv2
 import warnings
 
-    """ Wrapper for cv2 feature detection. See detect_organized_t for examples of use
-    """
+""" Wrapper for cv2 feature detection. See detect_organized_t for examples of use
+"""
 
 def detector(method):
     """Sets up a detector based on a method
