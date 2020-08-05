@@ -7,8 +7,9 @@ from matplotlib import pyplot as plt
 """displays feature matches in various ways thru pyplot.
 """
 
-def show(kp1, kp2, img1, img2, good, flag=0):
-    """displays feature matches in various ways thru pyplot
+def show(kp1, kp2, img1, img2, good, flag=0, show=True):
+    """ returns and displays feature matches
+        in various ways thru pyplot
 
     Parameters
     ----------
@@ -28,6 +29,15 @@ def show(kp1, kp2, img1, img2, good, flag=0):
          - 1: matches w/ homography
          - 2: homography only, 
         by default 0
+    show : Bool, optional
+        use plt to show the image or not
+        True because of legacy reasons, 
+        should really false for most applications
+
+    Returns
+    -------
+    image matrix
+        image matrix of image to show
     """
     # params = dict(kp1=kp1, kp2=kp2, img1=img1, img2=img2, good=good)
     flag_functions={
@@ -35,11 +45,11 @@ def show(kp1, kp2, img1, img2, good, flag=0):
         1 : _homography_d,
         2 : _homography_nm_d
     }
-    flag_functions.get(flag)(kp1, kp2, img1.copy(), img2.copy(), good)
+    return flag_functions.get(flag)(kp1, kp2, img1.copy(), img2.copy(), good, show)
 
 # a box full of matches
 # img1 is master, img2 is child
-def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
+def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False, show=True):
     """ shows each box from selective search and homography(optional)
         with respective matches individually for examination. 
         Used for testing purposes
@@ -55,6 +65,8 @@ def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
     """
     if n == -1:
         n = len(rois)
+
+    images = [] # initialize images to return
 
     img2 = img2.copy()
     for i in range(n):
@@ -90,16 +102,19 @@ def matchbox(kp_master, img1, img2, rois, n=-1, homography=False, mMask=False):
                         flags = 2)
 
         img3 = cv2.drawMatches(img1, kp_master, box_img, kp_child, good_n,None,**draw_params)
-        plt.imshow(img3),plt.show()
-    
+        if show:
+            plt.imshow(img3),plt.show()
+        images.append(img3)
 
-def just_boxes_r(rois, img, idxs):
+    return images
+
+def just_boxes_r(rois, img, idxs, show=True):
     """
     given an array of rois and indexes, displays specific boxes on the image
     """
-    just_boxes([rois[i][0] for i in idxs], img)
+    return just_boxes([rois[i][0] for i in idxs], img, show)
 
-def just_boxes(boxes, img):
+def just_boxes(boxes, img, show=True):
     """
     given an array of boxes, displays them on the image
     """
@@ -110,7 +125,10 @@ def just_boxes(boxes, img):
         color = (255, 0, 0) 
         thickness = 1
         image = cv2.rectangle(image, start_point, end_point, color, thickness)
-    plt.imshow(image),plt.show()
+    
+    if show:
+        plt.imshow(image),plt.show()
+    return image
 
 def homography_boxes(roi, img2):
     """displays all homography boxes on the image.
@@ -127,18 +145,23 @@ def homography_boxes(roi, img2):
     for roii in roi:
         dst = roii[3]
         img2 = cv2.polylines(img2,[dst],True,(0,0,255),1, cv2.LINE_AA)
-    plt.imshow(img2),plt.show()
+    
+    if show:
+        plt.imshow(img2),plt.show()
+    return img2
 
-def _matches_d(kp1, kp2, img1, img2, good):
+def _matches_d(kp1, kp2, img1, img2, good, show):
     """
     shows matches only
     """
     # cv2.drawMatchesKnn expects list of lists as matches.
     img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,outImg=None,flags=2)
-    plt.imshow(img3, 'gray'),plt.show()
+    if show:
+        plt.imshow(img3, 'gray'),plt.show()
+    return img3
 
 
-def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
+def _homography_d(kp1, kp2, img1, img2, good, show, show_matches=True):
     """
     shows homography bound and matches (dependent on show_matches)
     """
@@ -161,10 +184,12 @@ def _homography_d(kp1, kp2, img1, img2, good, show_matches=True):
 
     img3 = cv2.drawMatches(img1,kp1,img2,kp2,good_n,None,**draw_params)
 
-    plt.imshow(img3, 'gray'),plt.show()
+    if show:
+        plt.imshow(img3, 'gray'),plt.show()
+    return img3
 
-def _homography_nm_d(kp1, kp2, img1, img2, good):
+def _homography_nm_d(kp1, kp2, img1, img2, good, show):
     """
     shows only homography bound
     """
-    _homography_d(kp1, kp2, img1, img2, good, show_matches=False)
+    return _homography_d(kp1, kp2, img1, img2, good, show, show_matches=False)
