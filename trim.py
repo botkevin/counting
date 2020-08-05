@@ -145,7 +145,6 @@ def nms_homography(rois, overlap_thresh, score_fn):
 
     score_arr = [score_fn(roii) for roii in rois]
     idxs = np.argsort(score_arr)
-    print (idxs)
 
     while len(idxs) > 0:
         # grab the last index in the indexes list, add the index

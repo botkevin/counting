@@ -130,7 +130,7 @@ def just_boxes(boxes, img, show=True):
         plt.imshow(image),plt.show()
     return image
 
-def homography_boxes(roi, img2):
+def homography_boxes(roi, img2, show=True):
     """displays all homography boxes on the image.
 
     Parameters
@@ -150,7 +150,7 @@ def homography_boxes(roi, img2):
         plt.imshow(img2),plt.show()
     return img2
 
-def _matches_d(kp1, kp2, img1, img2, good, show):
+def _matches_d(kp1, kp2, img1, img2, good, show=True):
     """
     shows matches only
     """
@@ -161,7 +161,7 @@ def _matches_d(kp1, kp2, img1, img2, good, show):
     return img3
 
 
-def _homography_d(kp1, kp2, img1, img2, good, show, show_matches=True):
+def _homography_d(kp1, kp2, img1, img2, good, show=True, show_matches=True):
     """
     shows homography bound and matches (dependent on show_matches)
     """
@@ -188,7 +188,7 @@ def _homography_d(kp1, kp2, img1, img2, good, show, show_matches=True):
         plt.imshow(img3, 'gray'),plt.show()
     return img3
 
-def _homography_nm_d(kp1, kp2, img1, img2, good, show):
+def _homography_nm_d(kp1, kp2, img1, img2, good, show=True):
     """
     shows only homography bound
     """

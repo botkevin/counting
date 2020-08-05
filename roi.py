@@ -33,9 +33,9 @@ def s_search(image):
     Utilizes selective search to find the objects in the image
     Returns boxes:(x1,y1,x2,y2)
     """
-    print("s_search start")
+    # print("s_search start")
     boxes = selective_search(image, mode='single')
-    print("s_search end")
+    # print("s_search end")
     return boxes
 
 def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLANN", crosscheck=False):
