@@ -163,12 +163,10 @@ def nms_homography(rois, overlap_thresh, score_fn):
 
             # find overlap of box with index j and i
             overlap = _overlap(rois[i], rois[j])
-            print(overlap)
             if overlap > overlap_thresh:
             # delete this one
                 suppress.append(pos)
 
         idxs = np.delete(idxs, suppress)
-        print (idxs)
     
     return pick
