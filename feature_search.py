@@ -43,7 +43,7 @@ if __name__ == "__main__":
     
 
 def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False, 
-        score_cutoff=100, angle_cutoff=35, show_final=True):
+        score_cutoff=70, angle_cutoff=35, show_final=True):
     return_images = {}
 
     # skimage loads with color and selective search requires color
@@ -55,6 +55,8 @@ def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False,
 
     master_img = img1
     search_img = img2
+    return_images['master'] = master_img
+    return_images['search'] = search_img
 
     # load in grayscale. 
     # skimage rgb2gray doesn't work with sift and surf
@@ -67,6 +69,7 @@ def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False,
 
     # s_search
     boxes = roi.s_search(search_img)
+    if show: print('s search')
     s_search_img = display.just_boxes(boxes, search_img, show=show)
     return_images['s_search'] = s_search_img
 
@@ -78,14 +81,16 @@ def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False,
                                         modus="bf", crosscheck=True)
 
     # basic_cutoff
-    idxs_basic = score.basic_cutoff(rois, 100)
-    basic_cutoff_img = display.just_boxes_r(rois, search_img, idxs_basic, show=show)
+    idxs_basic = score.basic_cutoff(rois, score_cutoff)
+    if show: print('score_cutoff')
+    score_cutoff_img = display.just_boxes_r(rois, search_img, idxs_basic, show=show)
     rois = trim.idx_trim(rois, idxs_basic)
-    return_images['basic_cutoff'] = basic_cutoff_img
+    return_images['score_cutoff'] = score_cutoff_img
     
 
     # homography
     trim.homography_all(kp_master, master_img, search_img, rois)
+    if show: print('homography')
     homography_img = display.homography_boxes(rois, search_img, show=show)
     return_images['homography'] = homography_img
     if matchbox:
@@ -96,6 +101,7 @@ def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False,
     # homography angle cutoff
     idxs_angle = score.angle_cutoff(rois, angle_cutoff)
     rois = trim.idx_trim(rois, idxs_angle)
+    if show: print('angle cutoff')
     angle_cutoff_img = display.homography_boxes(rois, search_img, show=show)
     return_images['angle_cutoff'] = angle_cutoff_img
     if matchbox:
@@ -106,6 +112,7 @@ def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False,
     # NMS
     idxs_nms = trim.nms_homography(rois, .50, score._mask_basic_s)
     rois = trim.idx_trim(rois, idxs_nms)
+    if show or show_final: print('final')
     nms_img = display.homography_boxes(rois, search_img,show=(show or show_final))
     return_images['nms'] = nms_img
     return_images['final'] = nms_img
