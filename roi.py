@@ -23,18 +23,20 @@ rois : [[box, kp_child, good, dst(?), matchesMask(?)], ...]
     dst : [[[int32, int32]], ...x4]
         array of 4 points that make the homography box
     matchesMask : mask of the homography box
+    angles : [int, ...x4]
+        four angles of quadrilateral of dst
 
     IMPORTANT: dst and matchesMask will only appear after homography_all is called
     Trying to run functions that depend on these will raise an out of bounds error
 """
 
-def s_search(image):
+def s_search(image, mode='fast'):
     """ 
     Utilizes selective search to find the objects in the image
     Returns boxes:(x1,y1,x2,y2)
     """
     # print("s_search start")
-    boxes = selective_search(image, mode='single')
+    boxes = selective_search(image, mode=mode)
     # print("s_search end")
     return boxes
 

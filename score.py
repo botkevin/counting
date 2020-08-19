@@ -56,7 +56,16 @@ def _angle(p1,p2,p3):
     v2 = [p3[0]-p2[0], p3[1]-p2[1]] # p3-p2
     num = np.dot(v1,v2)
     denom = np.linalg.norm(v1) * np.linalg.norm(v2)
-    return np.degrees(np.arccos(num/denom))
+    
+    if num == 0 or denom == 0:
+        return 180
+
+    inside = num/denom
+    
+    if inside < -1 or inside > 1:
+        return 180
+    
+    return np.degrees(np.arccos(inside))
 
 def angle_cutoff(rois, ang_thresh):
     """
@@ -65,6 +74,7 @@ def angle_cutoff(rois, ang_thresh):
     ang_thresh is in degrees
     """
     idxs = []
+    angles = []
     for i in range(len(rois)):
         b = rois[i][3]
         ang = [0,0,0,0]
@@ -78,7 +88,8 @@ def angle_cutoff(rois, ang_thresh):
                 in_bounds = False
         if in_bounds:
             idxs.append(i)
-    return idxs
+            angles.append(ang)
+    return idxs, angles
     
 def _mask_basic_s(roii):
     """
@@ -92,6 +103,11 @@ def _mask_basic_s(roii):
             # matchesMask is 1 if in, 0 if not
             score += 1
     return score
+
+
+def _parallelogram_s(roii):
+    # should i build this off angles or edge lengths?
+    return
 
 # we can build fancy clustering scoring methods here
 # unsure if the make skeleton code would also be here

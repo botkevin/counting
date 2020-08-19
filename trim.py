@@ -131,9 +131,16 @@ def _overlap(roii, roij):
     shape1 = [s[0] for s in shape1]
     p1 = Polygon(shape2)
     p2 = Polygon(shape1)
-    # print(p1.intersects(p2))
+
+    if not (p1.is_valid and p2.is_valid):
+        # invalid shape
+        return 1
+
     # overlap calculation
-    return p1.intersection(p2).area/p1.area
+    min_area = min(p1.area, p2.area)
+    if min_area < 1: # really small area 
+        return 1
+    return p1.intersection(p2).area/min_area
 
 def nms_homography(rois, overlap_thresh, score_fn):
     # if there are no boxes, return an empty list
