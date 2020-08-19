@@ -44,3 +44,8 @@ Crosscheck might work better with the skeleton structure. Maybe try both.
 Currently is poor with group up objects
     - due to selective search finding a rectangle with multiple objects in it
     - might be solved with a simple 45 degree rotation and rerun.
+
+need to add functionality to nms to return the number of overlaps. only return a square if there are multiple overlaps,
+    - otherwise we end up with things just so happening to look the same
+
+finish tuning for parallelogram + mask basic scoring.

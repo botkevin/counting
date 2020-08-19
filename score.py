@@ -9,17 +9,6 @@ import numpy as np
 # different inputs and processing for scoring, which
 # is score.py's job
 
-def _basic_s(roii):
-    """
-    determines score based on number of good points
-    """
-    # take out empty arrays
-    # crosscheck returns empty arrays for nonmatched descriptors
-    good = roii[2]
-    good_pruned = [m for m in good if m] 
-    return len(good_pruned)
-
-
 def basic_cutoff(rois, scoring_cutoff):
     """basic scoring cutoff functions
 
@@ -90,7 +79,49 @@ def angle_cutoff(rois, ang_thresh):
             idxs.append(i)
             angles.append(ang)
     return idxs, angles
+
+def get_score_fn(method, weight=[1]):
+    """Returns weighted sum of methods to score for use in nms_homography
+    Mostly used to generate functions to pass into score_fn in feature_search.py
+
+    TODO: add get default scoring fn, either in this fn or another
     
+    Parameters
+    ----------
+    method : [string, ...]
+        array of methods to use as weighted sum to score
+        See flag_functions dictionary to see types scoring methods
+    weight : [int, ...]
+        array of weights to weight each respective method
+
+    Returns
+    -------
+    method(rois)
+        function used to calculate score by taking in rois
+    """
+    flag_functions={
+        'basic' : _basic_s,
+        'mask_basic' : _mask_basic_s,
+        'parallelogram' : _parallelogram_s,
+    }
+    assert len(method) == len(weight)
+    def return_fn (rois):
+        score = 0
+        for i, m in enumerate(method):
+            score += weight[i]*flag_functions(m)
+        return score
+    return return_fn
+
+def _basic_s(roii):
+    """
+    determines score based on number of good points
+    """
+    # take out empty arrays
+    # crosscheck returns empty arrays for nonmatched descriptors
+    good = roii[2]
+    good_pruned = [m for m in good if m] 
+    return len(good_pruned)
+
 def _mask_basic_s(roii):
     """
     score based on basic score, but only counts good points
@@ -107,7 +138,15 @@ def _mask_basic_s(roii):
 
 def _parallelogram_s(roii):
     # should i build this off angles or edge lengths?
-    return
+    # taking inspiration from dot products, I am finding
+    # the difference between the two unit vectors rotated
+    # by the respective angle
+    angles = roii[5]
+    dif1 = 1-np.cos(angles[0]-angles[2])
+    dif2 = 1-np.cos(angles[1]-angles[3])
+    return dif1 + dif2
+
+
 
 # we can build fancy clustering scoring methods here
 # unsure if the make skeleton code would also be here

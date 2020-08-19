@@ -24,11 +24,11 @@ if __name__ == "__main__":
     parser.add_argument('-mb','--matchboxes',
             help="toggle matchboxes image generation",
             action="store_true")
-    parser.add_argument('-sc','--score-cutoff', type=int,
-            help="cutoff on matchbox score, default=10",
+    parser.add_argument('-bc','--basic-cutoff', type=int,
+            help="cutoff on matchbox basic score, default=15",
             const=15)
     parser.add_argument('-ac','--angle-cutoff', type=int,
-            help="cutoff on matchbox score, default=35",
+            help="cutoff on matchbox angle in degrees, default=35",
             const=35)
     parser.add_argument('-ot','--overlap-thresh', type=float,
             help="threshold on overlap, default=.3",
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         method = args.method,
         show = args.show,
         matchbox = args.matchbox,
-        score_cutoff = args.score_cutoff,
+        basic_score_cutoff = args.basic_score_cutoff,
         angle_cutoff = args.angle_cutoff,
         overlap_thresh = args.overlap_thresh,
         show_final = args.no_show,
@@ -54,16 +54,15 @@ if __name__ == "__main__":
     
 
 def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False, 
-        score_cutoff=15, angle_cutoff=35, overlap_thresh=.3, show_final=True, search_mode='fast'):
+        basic_score_cutoff=15, angle_cutoff=35, overlap_thresh=.3, show_final=True, search_mode='fast'):
     return_images = {}
 
     kp_master, rois = roi_search (im1_name, im2_name, return_images, method=method,
                                 show=show, search_mode=search_mode)
 
     rois = prune (kp_master, rois, return_images, show=show, matchbox=matchbox, 
-        score_cutoff=score_cutoff, angle_cutoff=angle_cutoff, 
+        basic_score_cutoff=basic_score_cutoff, angle_cutoff=angle_cutoff, 
         overlap_thresh=overlap_thresh, show_final=show_final)
-# score_cutoff=10, angle_cutoff=35
 
     return rois, return_images
 
@@ -104,16 +103,16 @@ def roi_search(im1_name, im2_name, return_images, method="surf", show=False, sea
 
     return kp_master, rois
 
-def prune(kp_master, rois, return_images, show=False, matchbox=False, score_cutoff=15,
+def prune(kp_master, rois, return_images, show=False, matchbox=False, basic_score_cutoff=15,
      angle_cutoff=35, overlap_thresh=.3, show_final=True, score_fn=score._mask_basic_s):
     master_img = return_images['master']
     search_img = return_images['search']
     # basic_cutoff
-    idxs_basic = score.basic_cutoff(rois, score_cutoff)
-    if show: print('score_cutoff')
+    idxs_basic = score.basic_cutoff(rois, basic_score_cutoff)
+    if show: print('basic_score_cutoff')
     score_cutoff_img = display.just_boxes_r(rois, search_img, idxs_basic, show=show)
     rois = trim.idx_trim(rois, idxs_basic)
-    return_images['score_cutoff'] = score_cutoff_img
+    return_images['basic_score_cutoff'] = score_cutoff_img
     
 
     # homography
