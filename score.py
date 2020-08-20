@@ -105,10 +105,10 @@ def get_score_fn(method, weight=[1]):
         'parallelogram' : _parallelogram_s,
     }
     assert len(method) == len(weight)
-    def return_fn (rois):
+    def return_fn (roii):
         score = 0
         for i, m in enumerate(method):
-            score += weight[i]*flag_functions(m)
+            score += weight[i]*flag_functions[m](roii)
         return score
     return return_fn
 
@@ -142,9 +142,24 @@ def _parallelogram_s(roii):
     # the difference between the two unit vectors rotated
     # by the respective angle
     angles = roii[5]
-    dif1 = 1-np.cos(angles[0]-angles[2])
-    dif2 = 1-np.cos(angles[1]-angles[3])
+    dif1 = np.cos(np.radians(angles[0]-angles[2]))
+    dif2 = np.cos(np.radians(angles[1]-angles[3]))
     return dif1 + dif2
+
+def _p1(roii):
+    angles = roii[5]
+    dif1 = -abs(angles[0]-angles[2])
+    dif2 = -abs(angles[1]-angles[3])
+    return dif1 + dif2
+
+def _p2(roii):
+    angles = roii[5]
+    dif1 = abs(angles[0]-angles[1])
+    dif2 = abs(angles[2]-angles[3])
+    return dif1 + dif2
+
+def _p3(roii):
+    return
 
 
 

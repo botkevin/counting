@@ -130,7 +130,7 @@ def prune(kp_master, rois, return_images, show=False, matchbox=False, basic_scor
     rois = trim.idx_trim(rois, idxs_angle)
     assert len(angles) == len(rois)
     for i, roii in enumerate(rois):
-        roii.append(angles[i])
+        roii[5] = angles[i]
     if show: print('angle cutoff')
     angle_cutoff_img = display.homography_boxes(rois, search_img, show=show)
     return_images['angle_cutoff'] = angle_cutoff_img

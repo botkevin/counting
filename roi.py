@@ -13,7 +13,7 @@ import detect_organized as det
 Finds and returns regions of interest(roi) for further processing
 If looking for definition of rois
 ---------
-rois : [[box, kp_child, good, dst(?), matchesMask(?)], ...]
+rois : [[box, kp_child, good, dst(?), matchesMask(?), angles(?)], ...]
     kp_master: keypoints of master image
     box : ROI given by selective search that is not empty of matches or too small
     kp_child : keypoints of child image
@@ -26,8 +26,9 @@ rois : [[box, kp_child, good, dst(?), matchesMask(?)], ...]
     angles : [int, ...x4]
         four angles of quadrilateral of dst
 
-    IMPORTANT: dst and matchesMask will only appear after homography_all is called
-    Trying to run functions that depend on these will raise an out of bounds error
+    IMPORTANT: dst, matchesMask will only appear after homography_all is called
+               angles will only appear after calling angle_cutoff
+    Trying to run functions that depend on these will raise error because they are NoneType
 """
 
 def s_search(image, mode='fast'):
@@ -92,7 +93,7 @@ def check_roi_good(master_img, search_img, boxes, method, ratio=.75, modus="FLAN
             matches = det.match(des_master, des_child, modus, method) 
             good = det.ratio(matches, ratio)
         if good: # list is not empty, we dont want empty matchboxes
-            rois.append([box, kp_child, good])
+            rois.append([box, kp_child, good, None, None, None])
     return kp_master, rois
     
 def _make_mask(img_shape, rectangle):

@@ -47,8 +47,8 @@ def homography_all(kp_master, img1, img2, rois):
         good = roii[2]
 
         dst, _, matchesMask = homography(kp_master, kp_child, img1.shape[:2], good)
-        roii.append(np.int32(dst))
-        roii.append(matchesMask)
+        roii[3] = np.int32(dst)
+        roii[4] = matchesMask
     return rois
 
 # DEPRECATED
@@ -87,11 +87,6 @@ def nms_boxes(boxes, thresh):
 
     area = (x2 - x1 + 1) * (y2 - y1 + 1)
 
-    # TODO: sort this based on score
-    # NOTE: if score is naive score, this will work poorly
-    #        because the largest bounding box will eat everything
-    # idxs = np.argsort(y2)
-    # try sorthing this based on smallest first
     idxs = np.argsort(area)[::-1]
 
     while len(idxs) > 0:
@@ -152,6 +147,7 @@ def nms_homography(rois, overlap_thresh, score_fn):
 
     score_arr = [score_fn(roii) for roii in rois]
     idxs = np.argsort(score_arr)
+    print(idxs)
 
     while len(idxs) > 0:
         # grab the last index in the indexes list, add the index
