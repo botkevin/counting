@@ -152,14 +152,6 @@ def _p1(roii):
     dif2 = -abs(angles[1]-angles[3])
     return dif1 + dif2
 
-def _p2(roii):
-    angles = roii[5]
-    dif1 = abs(angles[0]-angles[1])
-    dif2 = abs(angles[2]-angles[3])
-    return dif1 + dif2
-
-def _p3(roii):
-    return
 
 
 

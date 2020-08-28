@@ -137,7 +137,7 @@ def _overlap(roii, roij):
         return 1
     return p1.intersection(p2).area/min_area
 
-def nms_homography(rois, overlap_thresh, score_fn):
+def nms_homography(rois, overlap_thresh, score_fn, overlap_num=0):
     # if there are no boxes, return an empty list
     if len(rois) == 0:
         return []
@@ -147,7 +147,6 @@ def nms_homography(rois, overlap_thresh, score_fn):
 
     score_arr = [score_fn(roii) for roii in rois]
     idxs = np.argsort(score_arr)
-    print(idxs)
 
     while len(idxs) > 0:
         # grab the last index in the indexes list, add the index
@@ -156,9 +155,14 @@ def nms_homography(rois, overlap_thresh, score_fn):
         # using the last index
         last = len(idxs) - 1
         i = idxs[last]
-        pick.append(i)
+        # pick.append(i)
         suppress = [last]
 
+        # new feature of overlap_count. Only add the index val to
+        # picked indicies if that shape has something overlapping -
+        # meaning that there are multiple matches in the same area
+        overlap_count = 0
+        
         for pos in range(last):
             # grab the current index
             j = idxs[pos]
@@ -166,8 +170,13 @@ def nms_homography(rois, overlap_thresh, score_fn):
             # find overlap of box with index j and i
             overlap = _overlap(rois[i], rois[j])
             if overlap > overlap_thresh:
-            # delete this one
+                # delete this one
                 suppress.append(pos)
+
+                overlap_count += 1
+
+        if overlap_count >= overlap_num:
+            pick.append(i)
 
         idxs = np.delete(idxs, suppress)
     

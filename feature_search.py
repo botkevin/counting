@@ -54,7 +54,8 @@ if __name__ == "__main__":
     
 
 def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False, 
-        basic_score_cutoff=15, angle_cutoff=35, overlap_thresh=.3, show_final=True, search_mode='fast'):
+        basic_score_cutoff=15, angle_cutoff=35, overlap_thresh=.3, 
+        show_final=True, search_mode='fast', overlap_num=1):
     return_images = {}
 
     kp_master, rois = roi_search (im1_name, im2_name, return_images, method=method,
@@ -62,7 +63,7 @@ def fsearch(im1_name, im2_name, method="surf", show=False, matchbox=False,
 
     rois = prune (kp_master, rois, return_images, show=show, matchbox=matchbox, 
         basic_score_cutoff=basic_score_cutoff, angle_cutoff=angle_cutoff, 
-        overlap_thresh=overlap_thresh, show_final=show_final)
+        overlap_thresh=overlap_thresh, show_final=show_final, overlap_num=1)
 
     return rois, return_images
 
@@ -104,7 +105,7 @@ def roi_search(im1_name, im2_name, return_images, method="surf", show=False, sea
     return kp_master, rois
 
 def prune(kp_master, rois, return_images, show=False, matchbox=False, basic_score_cutoff=15,
-     angle_cutoff=35, overlap_thresh=.3, show_final=True, score_fn=score._mask_basic_s):
+     angle_cutoff=35, overlap_thresh=.3, show_final=True, score_fn=score._mask_basic_s, overlap_num=1):
     master_img = return_images['master']
     search_img = return_images['search']
     # basic_cutoff
@@ -140,7 +141,8 @@ def prune(kp_master, rois, return_images, show=False, matchbox=False, basic_scor
         return_images['angle_cutoff_matchboxes'] = angle_cutoff_matchboxes
 
     # NMS
-    idxs_nms = trim.nms_homography(rois, overlap_thresh, score_fn)
+    # default overlap_num is 1 to try to prevent freak accident matches
+    idxs_nms = trim.nms_homography(rois, overlap_thresh, score_fn, overlap_num)
     rois = trim.idx_trim(rois, idxs_nms)
     if show or show_final: print('final')
     nms_img = display.homography_boxes(rois, search_img,show=(show or show_final))
